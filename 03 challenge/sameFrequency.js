@@ -1,3 +1,7 @@
+// 빈도수 세기 - sameFrequency
+// sameFrequency라는 함수를 작성하세요. 두 개의 양의 정수가 주어졌을 때, 두 숫자의 자릿수가 같은 빈도를 갖는지 구합니다.
+// O(N)
+
 function sameFrequency(n1, n2) {
     let n1s = n1.toString();
     let n2s = n2.toString();
