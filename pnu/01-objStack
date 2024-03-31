@@ -1,146 +1,121 @@
-class Point2 {
+class Obj {
     constructor(x, y) {
         this.ix = x;
         this.iy = y;
     }
-
-    toString() {
-        return "<" + this.ix + ", " + this.iy + ">";
-    }
-
     getX() {
         return this.ix;
     }
-
     getY() {
         return this.iy;
     }
-
     setX(x) {
         this.ix = x;
     }
-
     setY(y) {
         this.iy = y;
     }
-
-    equals(p) {
-        return this.ix === p.ix && this.iy === p.iy;
+    toString() {
+        return "<" + this.ix + ", " + this.iy + ">";
+    }
+    equals(o) {
+        return o.ix === this.ix && o.iy === this.iy;
     }
 }
 
-class ObjectStack {
-    constructor(capacity) {
-        this.data = [];
-        this.capacity = capacity;
-        this.top = 0;
+class ObjStack {
+    constructor(maxlen) {
+        this.stk = [];
+        this.ptr = 0;
+        this.capa = maxlen;
     }
-
     push(x) {
-        if (this.top >= this.capacity) {
-            throw new Error('스택이 가득 찼습니다.');
+        if (this.ptr >= this.capa) {
+            throw new Error("Full");
+            return;
         }
-        this.data[this.top++] = x;
+        this.stk[this.ptr++] = x;
     }
-
     pop() {
-        if (this.top <= 0) {
-            throw new Error('스택이 비어있습니다.');
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
         }
-        return this.data[--this.top];
+        return this.stk[--this.ptr];
     }
-
     peek() {
-        if (this.top <= 0) {
-            throw new Error('스택이 비어있습니다.');
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
         }
-        return this.data[this.top - 1];
+        return this.stk[this.ptr - 1];
     }
-
-    clear() {
-        this.top = 0;
-    }
-
-    indexOf(x) {
-        for (let i = this.top - 1; i >= 0; i--) {
-            if (this.data[i] === x) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    getCapacity() {
-        return this.capacity;
-    }
-
-    size() {
-        return this.top;
-    }
-
-    isEmpty() {
-        return this.top <= 0;
-    }
-
-    isFull() {
-        return this.top >= this.capacity;
-    }
-
     dump() {
-        for (let i = 0; i < this.top; i++) {
-            console.log(this.data[i]);
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
         }
+        let result = '';
+        for (let i = 0; i < this.ptr; i++) {
+            result += this.stk[i] + ' ';
+        }
+        console.log(result);
+    }
+    size() {
+        return this.ptr;
+    }
+    getCapa() {
+        return this.capa;
     }
 }
 
 function main() {
-    const s = new ObjectStack(4);
-    const random = () => Math.floor(Math.random() * 20);
+    const s = new ObjStack(4);
+    const r = () => Math.floor(Math.random() * 20);
 
     while (true) {
         console.log();
-        console.log(`현재 데이터 개수: ${s.size()} / ${s.getCapacity()}`);
-        console.log("(1)push　(2)pop　(3)peek　(4)dump　(0)종료: ");
+        console.log(`${s.size()} / ${s.getCapa()}`);
+        console.log("(1)push (2)pop (3)peek (4)dump (0)exit");
+        console.log();
 
-        const menu = parseInt(prompt());
-        if (menu === 0) {
-            break;
-        }
+        let menu = parseInt(prompt("menu"));
+        if (menu === 0) break;
 
-        let p;
         switch (menu) {
             case 1:
-                console.log("데이터: ");
-                const rndx = random();
-                const rndy = random();
-                p = new Point2(rndx, rndy);
+                let x = r();
+                let y = r();
+                let o = new Obj(x, y);
                 try {
-                    s.push(p);
-                } catch (error) {
-                    console.log(error.message);
+                    s.push(o);
+                    console.log(`Data : <${x}, ${y}>`);
+                } catch (e) {
+                    console.log(e.message);
                 }
                 break;
-
             case 2:
                 try {
-                    p = s.pop();
-                    console.log("pop한 데이터는 " + p + "입니다.");
-                } catch (error) {
-                    console.log(error.message);
+                    let o = s.pop();
+                    console.log(`Pop Data : ${o.toString()}`);
+                } catch (e) {
+                    console.log(e.message);
                 }
                 break;
-
             case 3:
                 try {
-                    p = s.peek();
-                    console.log("peek한 데이터는 " + p + "입니다.");
-                } catch (error) {
-                    console.log(error.message);
+                    let o = s.peek();
+                    console.log(`Peek Data : ${o.toString()}`);
+                } catch (e) {
+                    console.log(e.message);
                 }
                 break;
-
             case 4:
-                s.dump();
+                try {
+                    s.dump();
+                } catch (e) {
+                    console.log(e.message);
+                }
                 break;
         }
     }
