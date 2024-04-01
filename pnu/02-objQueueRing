@@ -1,0 +1,108 @@
+class Obj {
+    constructor(x, y) {
+        this.ix = x;
+        this.iy = y;
+    }
+    toString() {
+        return "<" + this.ix + ", " + this.iy + ">";
+    }
+}
+class ObjQueue {
+    constructor(maxlen) {
+        this.queue = [];
+        this.ptrF = 0;
+        this.ptrR = 0;
+        this.num = 0;
+        this.capa = maxlen;
+    }
+    push(o) {
+        if (this.num >= this.capa) {
+            throw new Error("Full");
+            return;
+        }
+        this.queue[this.ptrR] = o;
+        this.ptrR = (this.ptrR + 1) % this.capa;
+        this.num++;
+    }
+    pop() {
+        if (this.num <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        let tmp = this.queue[this.ptrF];
+        this.ptrF = (this.ptrF + 1) % this.capa;
+        this.num--;
+        return tmp;
+    }
+    peek() {
+        if (this.num <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        return this.queue[this.ptrF];
+    }
+    dump() {
+        if (this.num <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        let result = "Dump Data : [";
+        let count = this.num;
+        let ptr = (this.ptrR - 1 + this.capa) % this.capa;
+        while (count > 0) {
+            result += this.queue[ptr].toString() + ", ";
+            ptr = (ptr - 1 + this.capa) % this.capa;
+            count--;
+        }
+        result += "]";
+        console.log(result);
+    }
+}
+function main() {
+    const q = new ObjQueue(4);
+    const r = () => Math.floor(Math.random() * 20);
+    let o;
+    while (true) {
+        console.log();
+        console.log(`${q.num} / ${q.capa}`);
+        console.log("(1)push (2)pop (3)peek (4)dump (0)exit");
+        console.log();
+        let menu = parseInt(prompt("menu"));
+        if (menu === 0) break;
+        switch (menu) {
+            case 1:
+                o = new Obj(r(), r());
+                try {
+                    q.push(o);
+                    console.log(`Push Data : ${o.toString()}`);
+                } catch (e) {
+                    console.log(e.message);
+                }
+                break;
+            case 2:
+                try {
+                    let tmp = q.pop();
+                    console.log(`Pop Data : ${tmp.toString()}`);
+                } catch (e) {
+                    console.log(e.message);
+                }
+                break;
+            case 3:
+                try {
+                    let tmp = q.peek();
+                    console.log(`Peek Data : ${tmp.toString()}`);
+                } catch (e) {
+                    console.log(e.message);
+                }
+                break;
+            case 4:
+                try {
+                    q.dump();
+                } catch (e) {
+                    console.log(e.message);
+                }
+                break;
+        }
+    }
+}
+main();
