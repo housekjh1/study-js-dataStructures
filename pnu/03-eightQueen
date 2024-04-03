@@ -60,27 +60,41 @@ function solveQueen(c) {
     c[x++][y] = 1;
     count++;
 
-    while (count < 8) {
-        if (s.isEmpty()) break;
-        if (y >= c[0].length) {
-            let tmp = s.pop();
-            x = tmp.x;
-            y = tmp.y;
-            c[x][y] = 0;
-            count--;
-            y++;
-        }
-        while (x < c.length && y < c[0].length) {
-            if (chkMv(c, x, y)) {
-                s.push(new Point(x, y));
-                c[x++][y] = 1;
-                count++;
-                y = 0;
+    while (true) {
+        while (count < 8) {
+            if (s.isEmpty()) break;
+            if (y >= c[0].length) {
+                let tmp = s.pop();
+                x = tmp.x;
+                y = tmp.y;
+                c[x][y] = 0;
+                count--;
+                y++;
             }
-            y++;
+            while (x < c.length && y < c[0].length) {
+                if (chkMv(c, x, y)) {
+                    s.push(new Point(x, y));
+                    c[x++][y] = 1;
+                    count++;
+                    y = 0;
+                    break;
+                }
+                y++;
+            }
         }
+        if (x === 0 && y >= c[0].length && s.isEmpty()) {
+            console.log("풀이가 모두 끝났습니다.");
+            break;
+        }
+        console.log(`${mode++}번 답`);
+        showC(c);
+        let tmp = s.pop();
+        x = tmp.x;
+        y = tmp.y;
+        c[x][y] = 0;
+        count--;
+        y++;
     }
-    showC(c);
 }
 function chkRow(c, x) {
     for (let i = 0; i < c[0].length; i++) {
