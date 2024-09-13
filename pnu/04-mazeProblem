@@ -1,0 +1,168 @@
+class Item {
+    constructor(x, y, d) {
+        this.x = x;
+        this.y = y;
+        this.d = d;
+    }
+    toString() {
+        return `<${this.x}, ${this.y}, ${this.d}>`;
+    }
+}
+class Offset {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+    toString() {
+        return `<${this.x}, ${this.y}>`;
+    }
+}
+class Stack {
+    constructor(maxlen) {
+        this.stk = [];
+        this.ptr = 0;
+        this.capa = maxlen;
+    }
+    push(x) {
+        if (this.ptr >= this.capa) {
+            throw new Error("Full");
+            return;
+        }
+        this.stk[this.ptr++] = x;
+    }
+    pop() {
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        return this.stk[--this.ptr];
+    }
+    peek() {
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        return this.stk[this.ptr - 1];
+    }
+    dump() {
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        let result = "Dump Data : [";
+        for (let i = 0; i < this.ptr; i++) {
+            result += this.stk[i] + ", ";
+        }
+        result += "]";
+        console.log(result);
+    }
+    isEmpty() {
+        return this.ptr <= 0;
+    }
+    clear() {
+        this.ptr = 0;
+    }
+}
+function solveM(maze, mark, moves) {
+    let x = 0, y = 0, d = 0, g = 0, h = 0, c = 0;
+    const s = new Stack(50);
+    s.push(new Item(1,1,0));
+    mark[1][1] = 2;
+
+    while (!s.isEmpty()) {
+
+        if (c >= 8) {
+            let pop = s.pop();
+            x = pop.x;
+            y = pop.y;
+            mark[x][y] = 3;
+            c = 0;
+        }
+
+        let peek = s.peek();
+        x = peek.x;
+        y = peek.y;
+        d = 0;
+        
+        while (c < 8) {
+            g = (x + moves[d].x), h = (y + moves[d].y);
+            
+            if (g === (maze.length-2) && h === (maze[0].length-2)) {
+                mark[g][h] = 4;
+                s.clear();
+                break;
+            }
+            if (maze[g][h] === 0 && mark[g][h] === 0) {
+                s.push(new Item(g,h,d));
+                mark[g][h] = 2;
+                c = 0;
+                break;
+            }
+            d = (d+1) % 8;
+            c++;
+        }
+    }
+    
+    showM(mark);
+}
+function showM(m) {
+    let result = '';
+    for (let i = 0; i < m.length; i++) {
+        for (let j = 0; j < m[0].length; j++) {
+            result += m[i][j] + ' ';
+        }
+        result += "\n";
+    }
+    console.log(result);
+}
+function main() {
+    let maze = new Array(14);
+    let mark = new Array(14);
+    let moves = new Array(8);
+    
+    for (let i = 0; i < maze.length; i++) {
+        maze[i] = new Array(17);
+        mark[i] = new Array(17);
+    }
+    for (let i = 0; i < moves.length; i++) {
+        moves[i] = new Offset(0, 0);
+    }
+
+    const input =  [[ 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1 ], 
+    				[ 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1 ],
+    				[ 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1 ], 
+    				[ 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0 ],
+    				[ 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1 ], 
+    				[ 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1 ],
+    				[ 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1 ], 
+    				[ 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1 ],
+    				[ 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1 ], 
+    				[ 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0 ],
+    				[ 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0 ], 
+    				[ 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0 ]];
+
+    moves[0].x = -1; moves[0].y = 0;
+    moves[1].x = -1; moves[1].y = 1;
+    moves[2].x = 0; moves[2].y = 1;
+    moves[3].x = 1; moves[3].y = 1;
+    moves[4].x = 1; moves[4].y = 0;
+    moves[5].x = 1; moves[5].y = -1;
+    moves[6].x = 0; moves[6].y = -1;
+    moves[7].x = -1; moves[7].y = -1;
+
+    for (let i = 0; i < maze.length; i++) {
+        for (let j = 0; j < maze[0].length; j++) {
+            if (i === 0 || j === 0 || i === (maze.length-1) || j === (maze[0].length-1)) {
+                maze[i][j] = 1;
+                mark[i][j] = 1;
+            }
+            if ((i+1) < (maze.length-1) && (j+1) < (maze[0].length-1)) {
+                maze[i+1][j+1] = input[i][j];
+                mark[i+1][j+1] = 0;
+            }
+        }
+    }
+    
+    solveM(maze, mark, moves);
+}
+main();

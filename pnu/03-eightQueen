@@ -1,0 +1,154 @@
+class Point {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+    toString() {
+        return "<" + this.x + ", " + this.y + ">";
+    }
+}
+class ObjStack {
+    constructor(maxlen) {
+        this.stk = [];
+        this.ptr = 0;
+        this.capa = maxlen;
+    }
+    push(p) {
+        if (this.ptr >= this.capa) {
+            throw new Error("Full");
+            return;
+        }
+        this.stk[this.ptr++] = p;
+    }
+    pop() {
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        return this.stk[--this.ptr];
+    }
+    peek() {
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        return this.stk[this.ptr - 1];
+    }
+    dump() {
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        let result = "Dump Data : [";
+        for (let i = 0; i < this.ptr; i++) {
+            result += this.stk[i] + ", ";
+        }
+        result += "]";
+        console.log(result);
+    }
+    isEmpty() {
+        return this.ptr <= 0;
+    }
+}
+function solveQueen(c) {
+    let count = 0;
+    let mode = 1;
+    let x = 0;
+    let y = 0;
+    const s = new ObjStack(10);
+    s.push(new Point(x, y));
+    c[x++][y] = 1;
+    count++;
+
+    while (true) {
+        while (count < 8) {
+            if (s.isEmpty()) break;
+            if (y >= c[0].length) {
+                let tmp = s.pop();
+                x = tmp.x;
+                y = tmp.y;
+                c[x][y] = 0;
+                count--;
+                y++;
+            }
+            while (x < c.length && y < c[0].length) {
+                if (chkMv(c, x, y)) {
+                    s.push(new Point(x, y));
+                    c[x++][y] = 1;
+                    count++;
+                    y = 0;
+                    break;
+                }
+                y++;
+            }
+        }
+        if (x === 0 && y >= c[0].length && s.isEmpty()) {
+            console.log("풀이가 모두 끝났습니다.");
+            break;
+        }
+        console.log(`${mode++}번 답`);
+        showC(c);
+        let tmp = s.pop();
+        x = tmp.x;
+        y = tmp.y;
+        c[x][y] = 0;
+        count--;
+        y++;
+    }
+}
+function chkRow(c, x) {
+    for (let i = 0; i < c[0].length; i++) {
+        if (c[x][i] === 1) return false;
+    }
+    return true;
+}
+function chkCol(c, y) {
+    for (let i = 0; i < c.length; i++) {
+        if (c[i][y] === 1) return false;
+    }
+    return true;
+}
+function chkSW(c, x, y) {
+    for (let ix = x, iy = y; ix < c.length && iy >= 0; ix++, iy--) {
+        if (c[ix][iy] === 1) return false;
+    }
+    for (let ix = x, iy = y; ix >= 0 && iy < c[0].length; ix--, iy++) {
+        if (c[ix][iy] === 1) return false;
+    }
+    return true;
+}
+function chkSE(c, x, y) {
+    for (let ix = x, iy = y; ix >= 0 && iy >= 0; ix--, iy--) {
+        if (c[ix][iy] === 1) return false;
+    }
+    for (let ix = x, iy = y; ix < c.length && iy < c[0].length; ix++, iy++) {
+        if (c[ix][iy] === 1) return false;
+    }
+    return true;
+}
+function chkMv(c, x, y) {
+    return chkRow(c, x) && chkCol(c, y) && chkSW(c, x, y) && chkSE(c, x, y);
+}
+function showC(c) {
+    let result = '';
+    for (let i = 0; i < c.length; i++) {
+        for (let j = 0; j < c[0].length; j++) {
+            result += c[i][j] + " ";
+        }
+        result += "\n";
+    }
+    console.log(result);
+}
+function main() {
+    let c = new Array(8);
+    for (let i = 0; i < 8; i++) {
+        c[i] = new Array(8);
+    }
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            c[i][j] = 0;
+        }
+    }
+    solveQueen(c);
+}
+main();

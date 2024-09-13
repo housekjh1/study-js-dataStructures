@@ -1,0 +1,124 @@
+class Obj {
+    constructor(x, y) {
+        this.ix = x;
+        this.iy = y;
+    }
+    getX() {
+        return this.ix;
+    }
+    getY() {
+        return this.iy;
+    }
+    setX(x) {
+        this.ix = x;
+    }
+    setY(y) {
+        this.iy = y;
+    }
+    toString() {
+        return "<" + this.ix + ", " + this.iy + ">";
+    }
+    equals(o) {
+        return o.ix === this.ix && o.iy === this.iy;
+    }
+}
+
+class ObjStack {
+    constructor(maxlen) {
+        this.stk = [];
+        this.ptr = 0;
+        this.capa = maxlen;
+    }
+    push(x) {
+        if (this.ptr >= this.capa) {
+            throw new Error("Full");
+            return;
+        }
+        this.stk[this.ptr++] = x;
+    }
+    pop() {
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        return this.stk[--this.ptr];
+    }
+    peek() {
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        return this.stk[this.ptr - 1];
+    }
+    dump() {
+        if (this.ptr <= 0) {
+            throw new Error("Empty");
+            return;
+        }
+        let result = '';
+        for (let i = 0; i < this.ptr; i++) {
+            result += this.stk[i] + ' ';
+        }
+        console.log(result);
+    }
+    size() {
+        return this.ptr;
+    }
+    getCapa() {
+        return this.capa;
+    }
+}
+
+function main() {
+    const s = new ObjStack(4);
+    const r = () => Math.floor(Math.random() * 20);
+
+    while (true) {
+        console.log();
+        console.log(`${s.size()} / ${s.getCapa()}`);
+        console.log("(1)push (2)pop (3)peek (4)dump (0)exit");
+        console.log();
+
+        let menu = parseInt(prompt("menu"));
+        if (menu === 0) break;
+
+        switch (menu) {
+            case 1:
+                let x = r();
+                let y = r();
+                let o = new Obj(x, y);
+                try {
+                    s.push(o);
+                    console.log(`Data : <${x}, ${y}>`);
+                } catch (e) {
+                    console.log(e.message);
+                }
+                break;
+            case 2:
+                try {
+                    let o = s.pop();
+                    console.log(`Pop Data : ${o.toString()}`);
+                } catch (e) {
+                    console.log(e.message);
+                }
+                break;
+            case 3:
+                try {
+                    let o = s.peek();
+                    console.log(`Peek Data : ${o.toString()}`);
+                } catch (e) {
+                    console.log(e.message);
+                }
+                break;
+            case 4:
+                try {
+                    s.dump();
+                } catch (e) {
+                    console.log(e.message);
+                }
+                break;
+        }
+    }
+}
+
+main();
